@@ -6,12 +6,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Book Record App</h1>
+        <h1>読書記録</h1>
 
         <!-- ナビゲーションメニュー -->
         <nav>
             <ul>
-                <li><a href="{{ route('book_records.create') }}">Add New Book Record</a></li>
+                <li><a href="{{ route('book_records.create') }}">記録の追加</a></li>
                 {{-- <li><a href="{{ route('book_records.review') }}">Review Records</a></li>
                 <li><a href="{{ route('book_records.purpose') }}">Set or View Purpose</a></li> --}}
             </ul>
@@ -19,16 +19,17 @@
 
         <!-- 書籍の一覧を表示 -->
         <section>
-            <h2>Book Records</h2>
+            <h2>書籍一覧</h2>
 
             <!-- 書籍の一覧をテーブルで表示 -->
             <table>
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Read Date</th>
-                        <th>Notes</th>
+                        <th>書籍</th>
+                        <th>著者</th>
+                        <th>日付</th>
+                        <th>メモ</th>
+                        <th>操作</th> <!-- 操作列を追加 -->
                     </tr>
                 </thead>
                 <tbody>
@@ -38,10 +39,18 @@
                             <td>{{ $bookRecord->author }}</td>
                             <td>{{ $bookRecord->read_date }}</td>
                             <td>{{ $bookRecord->notes }}</td>
+                            <td>
+                                <!-- 削除ボタンのフォーム -->
+                                <form action="{{ route('book_records.destroy', $bookRecord->id) }}" method="POST" onsubmit="return confirm('この書籍を削除してもよろしいですか？');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">削除</button>
+                                </form>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4">No records found.</td>
+                            <td colspan="5">記録が見つかりませんでした。</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -55,3 +64,4 @@
     </div>
 </body>
 </html>
+

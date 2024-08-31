@@ -26,6 +26,15 @@ class BookRecordController extends Controller
         BookRecord::create($request->only(['title', 'author', 'read_date', 'notes']));
 
         // 成功メッセージとともに登録フォームにリダイレクト
-        return redirect()->route('book_records.create')->with('success', 'Book record created successfully.');
+        return redirect()->route('home')->with('success', 'Book record created successfully.');
+    }
+
+
+    public function destroy($id)
+    {
+        $bookRecord = BookRecord::findOrFail($id);
+        $bookRecord->delete();
+
+        return redirect()->route('home')->with('success', 'Book record deleted successfully.');
     }
 }
