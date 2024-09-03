@@ -12,3 +12,4 @@ Route::get('book_records/create', [BookRecordController::class, 'create'])->name
 Route::post('book_records', [BookRecordController::class, 'store'])->name('book_records.store');
 Route::get('/', [HomePageController::class, 'index'])->name('home');
 Route::delete('book_records/{id}', [BookRecordController::class, 'destroy'])->name('book_records.destroy');
+Route::get('book_records/{id}', [BookRecordController::class, 'show'])->name('book_records.show');

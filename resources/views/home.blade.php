@@ -28,7 +28,6 @@
                         <th>書籍</th>
                         <th>著者</th>
                         <th>日付</th>
-                        <th>メモ</th>
                         <th>操作</th> <!-- 操作列を追加 -->
                     </tr>
                 </thead>
@@ -38,15 +37,7 @@
                             <td>{{ $bookRecord->title }}</td>
                             <td>{{ $bookRecord->author }}</td>
                             <td>{{ $bookRecord->read_date }}</td>
-                            <td>{{ $bookRecord->notes }}</td>
-                            <td>
-                                <!-- 削除ボタンのフォーム -->
-                                <form action="{{ route('book_records.destroy', $bookRecord->id) }}" method="POST" onsubmit="return confirm('この書籍を削除してもよろしいですか？');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">削除</button>
-                                </form>
-                            </td>
+                            <td><a href="{{ route('book_records.show', $bookRecord->id) }}">詳細</a></td>
                         </tr>
                     @empty
                         <tr>

@@ -37,4 +37,10 @@ class BookRecordController extends Controller
 
         return redirect()->route('home')->with('success', 'Book record deleted successfully.');
     }
+    public function show($id)
+    {
+        $bookRecord = BookRecord::findOrFail($id);
+
+        return view('book_records.show', compact('bookRecord'));
+    }
 }
