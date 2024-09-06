@@ -6,6 +6,7 @@ use App\Models\BookRecord; // モデルをインポート
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\QuestionDisplayed;
 
 
 class BookRecordController extends Controller
@@ -40,20 +41,36 @@ class BookRecordController extends Controller
 
         return redirect()->route('home')->with('success', 'Book record deleted successfully.');
     }
-    public function show($id)
-    {
-        $bookRecord = BookRecord::findOrFail($id);
-    
-        // 質問をランダムに取得（例として3つ）
-        $questions = Question::inRandomOrder()->limit(1)->get(); 
-    
-        // 質問に対する回答を取得
-        $answers = Answer::where('book_record_id', $bookRecord->id)
-                         ->get()
-                         ->keyBy('question_id');
-    
-        return view('book_records.show', compact('bookRecord', 'questions', 'answers'));
+// BookRecordController.php
+public function show($id)
+{
+    $bookRecord = BookRecord::findOrFail($id);
+
+    // 既に表示された質問を取得
+    $displayedQuestions = QuestionDisplayed::where('book_record_id', $id)
+                                           ->pluck('question_id')
+                                           ->toArray();
+
+    // 既に表示された質問があればそれを取得し、なければランダムに質問を選択
+    if (!empty($displayedQuestions)) {
+        $questions = Question::whereIn('id', $displayedQuestions)->get();
+    } else {
+        $questions = Question::inRandomOrder()->limit(3)->get();
+
+        // 選ばれた質問を `questions_displayed` テーブルに保存
+        foreach ($questions as $question) {
+            QuestionDisplayed::create([
+                'book_record_id' => $id,
+                'question_id' => $question->id,
+            ]);
+        }
     }
+
+    $answers = Answer::where('book_record_id', $id)->get()->keyBy('question_id');
+
+    return view('book_records.show', compact('bookRecord', 'questions', 'answers'));
+}
+
     
     public function storeAnswer(Request $request, $id)
     {
