@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\BookRecord; // モデルをインポート
 use Illuminate\Http\Request;
+use App\Models\Question;
+use App\Models\Answer;
+
 
 class BookRecordController extends Controller
 {
@@ -40,7 +43,33 @@ class BookRecordController extends Controller
     public function show($id)
     {
         $bookRecord = BookRecord::findOrFail($id);
-
-        return view('book_records.show', compact('bookRecord'));
+    
+        // 質問をランダムに取得（例として3つ）
+        $questions = Question::inRandomOrder()->limit(1)->get(); 
+    
+        // 質問に対する回答を取得
+        $answers = Answer::where('book_record_id', $bookRecord->id)
+                         ->get()
+                         ->keyBy('question_id');
+    
+        return view('book_records.show', compact('bookRecord', 'questions', 'answers'));
     }
+    
+    public function storeAnswer(Request $request, $id)
+    {
+        $request->validate([
+            'question_id' => 'required|exists:questions,id',
+            'answer' => 'required|string',
+        ]);
+    
+        $bookRecord = BookRecord::findOrFail($id);
+    
+        Answer::updateOrCreate(
+            ['book_record_id' => $bookRecord->id, 'question_id' => $request->input('question_id')],
+            ['answer' => $request->input('answer')]
+        );
+    
+        return redirect()->route('book_records.show', $bookRecord->id)->with('success', '回答が保存されました。');
+    }
+    
 }
